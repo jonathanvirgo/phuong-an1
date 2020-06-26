@@ -6,25 +6,25 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-sm">Prioritize</div>
-    <div class="col-sm">Name</div>
-    <div class="col-sm">Check In</div>
-    <div class="col-sm">Turn</div>
-    <div class="col-sm"></div>
-    <div class="col-sm">Time Check In</div>
+    <div class="col-sm-1">Prioritize</div>
+    <div class="col-sm-3">Name</div>
+    <div class="col-sm-2">Check In</div>
+    <div class="col-sm-2">Turn</div>
+    <div class="col-sm-1"></div>
+    <div class="col-sm-3">Time Check In</div>
   </div>
   <div *ngFor="let nhanVien of nhanViens" class="row">
-    <div class="col-sm">{{nhanVien.prioritize}}</div>
-    <div class="col-sm">{{nhanVien.name}}</div>
-    <div class="col-sm" (click) = "checkInNhanVien(nhanVien.id)">{{nhanVien.checkIn}}</div>
-    <div class="col-sm" (click) = "deleteTurn(nhanVien.id)">{{nhanVien.turn}}</div>
-    <div class="col-sm">
+    <div class="col-sm-1">{{nhanVien.prioritize == 0 ? '-' : nhanVien.prioritize}}</div>
+    <div class="col-sm-3">{{nhanVien.name}}</div>
+    <div class="col-sm-2" (click) = "checkInNhanVien(nhanVien.id)">{{nhanVien.checkIn}}</div>
+    <div class="col-sm-2">{{nhanVien.turn}}</div>
+    <div class="col-sm-1">
       <div class="row">
-        <div class="col">+</div>
-        <div class="col">-</div>
+        <div class="col"><button type="button" class="btn btn-link" (click) = "changeTurn(nhanVien.id,'add')">+</button></div>
+        <div class="col"><button type="button" class="btn btn-link" (click) = "changeTurn(nhanVien.id, 'delete')">-</button></div>
       </div>
     </div>
-    <div class="col-sm">{{nhanVien.timecheckIn !== 0 ? (nhanVien.timecheckIn | date) : 0}}</div>
+    <div class="col-sm-3">{{nhanVien.timecheckIn !== 0 ? (nhanVien.timecheckIn | date) : 0}}</div>
   </div>
   <h5 *ngIf="isNhanVienChon">Gợi ý của chúng tôi là: {{nhanVienChon.name}}</h5>
   <div class="row" style="margin-top: 100px">
