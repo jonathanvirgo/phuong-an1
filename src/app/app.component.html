@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="row" style="margin-top: 40px;">
+    <div class="col-sm-10"><h3>Danh sách nhân viên</h3></div>
+    <div class="col-sm-2">
+      <button (click)="themNhanVien()">Add</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm">Name</div>
+    <div class="col-sm">Check In</div>
+    <div class="col-sm">Turn</div>
+    <div class="col-sm">Time Check In</div>
+  </div>
+  <div *ngFor="let nhanVien of nhanViens" class="row">
+    <div class="col-sm">{{nhanVien.name}}</div>
+    <div class="col-sm" (click) = "checkInNhanVien(nhanVien.id)">{{nhanVien.checkIn}}</div>
+    <div class="col-sm" (click) = "deleteTurn(nhanVien.id)">{{nhanVien.turn}}</div>
+    <div class="col-sm">{{nhanVien.timecheckIn}}</div>
+  </div>
+  <div class="row" style="margin-top: 100px">
+    <div class="col-sm-10"><h3 >Danh sách khách hàng</h3></div>
+    <div class="col-sm-2">
+      <button (click)="themKhachHang()">Add</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm">Name</div>
+  </div>
+  <div *ngFor="let khachHang of khachHangs" class="row">
+    <div class="col-sm">{{khachHang.name}}</div>
+  </div>
+  <h5 *ngIf="isAddKh">Chua co nhan vien check in</h5>
+</div>
