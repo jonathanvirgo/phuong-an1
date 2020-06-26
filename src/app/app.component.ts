@@ -7,9 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   nhanViens = [
-    {id:1,name:'Nguyen A', checkIn: false, turn: 0, timecheckIn:0},
-    {id:2,name:'Nguyen B', checkIn: false, turn: 0, timecheckIn:0},
-    {id:3,name:'Nguyen C', checkIn: false, turn: 0, timecheckIn:0}
+    {id:1,name:'Nguyen A', checkIn: false, turn: 0, timecheckIn:0,prioritize:0},
+    {id:2,name:'Nguyen B', checkIn: false, turn: 0, timecheckIn:0,prioritize:0},
+    {id:3,name:'Nguyen C', checkIn: false, turn: 0, timecheckIn:0,prioritize:0}
   ];
   khachHangs = [];
   nhanVienCheckIn = [];
@@ -17,6 +17,8 @@ export class AppComponent {
   idNhanVien = 3;
   isAddKh: boolean;
   title = 'phuong-an-vong-tron';
+  nhanVienChon: any;
+  isNhanVienChon: boolean;
   themKhachHang(){
     if(this.nhanVienCheckIn.length > 0){
       this.isAddKh = false;
@@ -89,6 +91,6 @@ export class AppComponent {
   }
   themNhanVien(){
     this.idNhanVien += 1;
-    this.nhanViens.push({id:this.idNhanVien,name:'Nhan Vien' + this.idNhanVien, checkIn: false, turn: 0, timecheckIn:0});
+    this.nhanViens.push({id:this.idNhanVien,name:'Nhan Vien' + this.idNhanVien, checkIn: false, turn: 0, timecheckIn:0, prioritize: 0});
   }
 }
