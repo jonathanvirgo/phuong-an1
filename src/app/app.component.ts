@@ -32,7 +32,17 @@ export class AppComponent {
           break;
         }
       }
-      this.addPrioritize();
+    }else{
+      this.isAddKh = true;
+    }
+  }
+  goiy(){
+    if(this.nhanVienCheckIn.length > 0){
+      this.isAddKh = false;
+      this.isNhanVienChon = true;
+      this.nhanVienChon = this.caculateNhanVienAddTurn();
+      this.idKhachHang += 1;
+      this.khachHangs.push({id:this.idKhachHang, name: 'Khach Hang ' + this.idKhachHang});
     }else{
       this.isAddKh = true;
     }
@@ -57,7 +67,7 @@ export class AppComponent {
     return d.getTime();
   }
   caculateNhanVienAddTurn(){
-    let nhanVienAddTurn, turnMin, timecheckInMin;
+    let nhanVienAddTurn, turnMin,turnMax, timecheckInMin;
     for(let nhanVien of this.nhanVienCheckIn){
       if(nhanVien.timecheckIn > 0){
         if(turnMin){
@@ -67,8 +77,16 @@ export class AppComponent {
         }else{
           turnMin = nhanVien.turn;
         }
+        if(turnMax){
+          if(nhanVien.turn > turnMax){
+            turnMax = nhanVien.turn;
+          }
+        }else{
+          turnMax = nhanVien.turn;
+        }
       }
     }
+    this.addPrioritize(turnMin, turnMax);
     let nhanVienTurnMin = this.nhanVienCheckIn.filter(nv => nv.turn == turnMin && nv.timecheckIn > 0);
     if(nhanVienTurnMin.length == 1){
       nhanVienAddTurn = nhanVienTurnMin[0];
@@ -96,24 +114,27 @@ export class AppComponent {
     this.idNhanVien += 1;
     this.nhanViens.push({id:this.idNhanVien,name:'Nhan Vien' + this.idNhanVien, checkIn: false, turn: 0, timecheckIn:0, prioritize: 0});
   }
-  addPrioritize(){
-    let prioritize: number;
-    let cloneNhanViens = [...this.nhanViens];
+  addPrioritize(turnMin, turnMax){
+    let cloneNhanViens = [...this.nhanVienCheckIn];
     let nvs = [];
     cloneNhanViens.sort(this.compareValues('turn'));
-    for(let i=0;i< cloneNhanViens.length; i++){
-      let nhanVien = cloneNhanViens[i];
-        if(i==0) {
-          nhanVien.prioritize = 1;
-          prioritize = 1;
-          nvs.push({id: nhanVien.id, prioritize:nhanVien.prioritize, timecheckIn: nhanVien.timecheckIn});
-        }else{
-          if(cloneNhanViens[i].turn == cloneNhanViens[i+1].turn){
-
-          }
-        }
+    for(let i=turnMin; i<= turnMax; i++){
+      let arrTurn = [];
+      for(let nv of cloneNhanViens){
+        if(nv.turn == i) arrTurn.push(nv);
+      }
+      arrTurn.sort(this.compareValues('timecheckIn'));
+      nvs = nvs.concat(arrTurn);
     }
-    console.log("addPrioritize", cloneNhanViens.map(s=> s.turn), this.nhanViens.map(s=> s.turn));
+    nvs = nvs.map(s => {return {
+      id: s.id,
+      prioritize: nvs.indexOf(s) + 1
+    }});
+    for(let nv of nvs){
+      for(let nhanvien of this.nhanViens){
+        if(nhanvien.id == nv.id) nhanvien = Object.assign(nhanvien, nv);
+      }
+    }
   }
   compareValues(key, order = 'asc') {
     return function(a, b) {
