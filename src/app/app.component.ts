@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { StaffService } from './services/staff.service';
 
 @Component({
   selector: 'app-root',
@@ -6,157 +7,80 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  nhanViens = [
+
+  constructor(private staffService: StaffService){
+  }
+  staffs = [
     {id:1,name:'Nguyen A', checkIn: false, turn: 0, timecheckIn:0,prioritize:0},
     {id:2,name:'Nguyen B', checkIn: false, turn: 0, timecheckIn:0,prioritize:0},
     {id:3,name:'Nguyen C', checkIn: false, turn: 0, timecheckIn:0,prioritize:0}
   ];
-  khachHangs = [];
-  nhanVienCheckIn = [];
-  idKhachHang = 0;
-  idNhanVien = 3;
-  isAddKh: boolean;
+  customers = [];
+  staffCheckIn = [];
+  idCustomer = 0;
+  idStaff = 3;
+  isAddCus: boolean;
   title = 'phuong-an-vong-tron';
-  nhanVienChon: any;
-  isNhanVienChon: boolean;
-  themKhachHang(){
-    if(this.nhanVienCheckIn.length > 0){
-      this.isAddKh = false;
-      this.isNhanVienChon = true;
-      this.nhanVienChon = this.caculateNhanVienAddTurn();
-      for(let nhanVien of this.nhanViens){
-        if(nhanVien.id == this.nhanVienChon.id) {
-          nhanVien.turn += 1;
-          this.idKhachHang += 1;
-          this.khachHangs.push({id:this.idKhachHang, name: 'Khach Hang ' + this.idKhachHang});
-          break;
-        }
-      }
-    }else{
-      this.isAddKh = true;
-    }
-  }
-  goiy(){
-    if(this.nhanVienCheckIn.length > 0){
-      this.isAddKh = false;
-      this.isNhanVienChon = true;
-      this.nhanVienChon = this.caculateNhanVienAddTurn();
-      this.idKhachHang += 1;
-      this.khachHangs.push({id:this.idKhachHang, name: 'Khach Hang ' + this.idKhachHang});
-    }else{
-      this.isAddKh = true;
-    }
-  }
+  staffChose: any;
+  isStaffChose: boolean;
+
   checkInNhanVien(id){
-    for(let nhanVien of this.nhanViens){
+    for(let nhanVien of this.staffs){
       if(nhanVien.id == id){
         if(nhanVien.checkIn == false){
           nhanVien.checkIn = true;
-          nhanVien.timecheckIn = this.genTimeStamp();
-          this.nhanVienCheckIn.push(nhanVien);
+          nhanVien.timecheckIn = this.staffService.genTimeStamp();
+          this.staffCheckIn.push(nhanVien);
         }else{
           nhanVien.checkIn = false;
           nhanVien.timecheckIn = 0;
-          this.nhanVienCheckIn = this.nhanVienCheckIn.filter(nv => nv.id !== id);
+          nhanVien.prioritize = 0;
+          this.staffCheckIn = this.staffCheckIn.filter(nv => nv.id !== id);
         }
       }
     }
-  }
-  genTimeStamp(): number {
-    let d = new Date();
-    return d.getTime();
-  }
-  caculateNhanVienAddTurn(){
-    let nhanVienAddTurn, turnMin,turnMax, timecheckInMin;
-    for(let nhanVien of this.nhanVienCheckIn){
-      if(nhanVien.timecheckIn > 0){
-        if(turnMin){
-          if(nhanVien.turn < turnMin){
-            turnMin = nhanVien.turn;
-          }
-        }else{
-          turnMin = nhanVien.turn;
-        }
-        if(turnMax){
-          if(nhanVien.turn > turnMax){
-            turnMax = nhanVien.turn;
-          }
-        }else{
-          turnMax = nhanVien.turn;
-        }
-      }
-    }
-    this.addPrioritize(turnMin, turnMax);
-    let nhanVienTurnMin = this.nhanVienCheckIn.filter(nv => nv.turn == turnMin && nv.timecheckIn > 0);
-    if(nhanVienTurnMin.length == 1){
-      nhanVienAddTurn = nhanVienTurnMin[0];
+    if(this.staffCheckIn.length > 0){
+      this.isStaffChose = true;
+      this.staffChose = this.staffCheckIn[0];
     }else{
-      for(let nhanVien of nhanVienTurnMin){
-        if(timecheckInMin){
-          if(nhanVien.timecheckIn < timecheckInMin) timecheckInMin = nhanVien.timecheckIn;
-        }else{
-          timecheckInMin = nhanVien.timecheckIn;
+      this.isStaffChose = false;
+    }
+  }
+
+  changeTurn(id, type){
+    if(this.staffCheckIn.length > 0){
+      this.isAddCus = false;
+      this.isStaffChose = true;
+      this.idCustomer += 1;
+      for(let nhanVien of this.staffs){
+        if(nhanVien.id == id && nhanVien.checkIn){
+          if(type == 'add') {
+            this.customers.push({id:this.idCustomer, name: 'Khach Hang ' + this.idCustomer, staff: nhanVien.name});
+            nhanVien.turn = nhanVien.turn == 0 ? 1 : nhanVien.turn + 1;
+            let turnMinMax = this.staffService.caculateTurnMinMax(this.staffCheckIn);
+            this.addPrioritize(turnMinMax[0], turnMinMax[1], this.staffCheckIn);
+          }else if(type == 'delete') nhanVien.turn = nhanVien.turn == 0 ? 0 : nhanVien.turn - 1;
         }
       }
-      nhanVienAddTurn = this.nhanVienCheckIn.filter(nv => nv.timecheckIn == timecheckInMin)[0];
-    }
-    return nhanVienAddTurn;
-  }
-  changeTurn(id, type){
-    for(let nhanVien of this.nhanViens){
-      if(nhanVien.id == id){
-        if(type == 'add') nhanVien.turn = nhanVien.turn == 0 ? 1 : nhanVien.turn + 1;
-        else if(type == 'delete') nhanVien.turn = nhanVien.turn == 0 ? 0 : nhanVien.turn - 1;
-      }
+    }else{
+      this.isAddCus = true;
     }
   }
+
   themNhanVien(){
-    this.idNhanVien += 1;
-    this.nhanViens.push({id:this.idNhanVien,name:'Nhan Vien' + this.idNhanVien, checkIn: false, turn: 0, timecheckIn:0, prioritize: 0});
+    this.idStaff += 1;
+    this.staffs.push({id:this.idStaff,name:'Nhan Vien' + this.idStaff, checkIn: false, turn: 0, timecheckIn:0, prioritize: 0});
   }
-  addPrioritize(turnMin, turnMax){
-    let cloneNhanViens = [...this.nhanVienCheckIn];
-    let nvs = [];
-    cloneNhanViens.sort(this.compareValues('turn'));
-    for(let i=turnMin; i<= turnMax; i++){
-      let arrTurn = [];
-      for(let nv of cloneNhanViens){
-        if(nv.turn == i) arrTurn.push(nv);
-      }
-      arrTurn.sort(this.compareValues('timecheckIn'));
-      nvs = nvs.concat(arrTurn);
-    }
-    nvs = nvs.map(s => {return {
-      id: s.id,
-      prioritize: nvs.indexOf(s) + 1
-    }});
-    for(let nv of nvs){
-      for(let nhanvien of this.nhanViens){
-        if(nhanvien.id == nv.id) nhanvien = Object.assign(nhanvien, nv);
+
+  private addPrioritize(turnMin, turnMax, staffCheckIn){
+    let nvs = this.staffService.caculatePrioritize(turnMin, turnMax, staffCheckIn);
+    if(nvs.length > 0){
+      for(let nv of nvs){
+        for(let nhanvien of this.staffs){
+          if(nhanvien.id == nv.id) nhanvien = Object.assign(nhanvien, nv);
+          if(nhanvien.id == nvs[0].id) this.staffChose = nhanvien;
+        }
       }
     }
-  }
-  compareValues(key, order = 'asc') {
-    return function(a, b) {
-      if(!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
-        // nếu không tồn tại
-        return 0;
-      }
-
-      const varA = (typeof a[key] === 'string') ?
-      a[key].toUpperCase() : a[key];
-      const varB = (typeof b[key] === 'string') ?
-        b[key].toUpperCase() : b[key];
-
-      let comparison = 0;
-      if (varA > varB) {
-        comparison = 1;
-      } else if (varA < varB) {
-        comparison = -1;
-      }
-      return (
-        (order == 'desc') ? (comparison * -1) : comparison
-      );
-    };
   }
 }

@@ -13,7 +13,7 @@
     <div class="col-sm-1"></div>
     <div class="col-sm-3">Time Check In</div>
   </div>
-  <div *ngFor="let nhanVien of nhanViens" class="row">
+  <div *ngFor="let nhanVien of staffs" class="row">
     <div class="col-sm-1">{{nhanVien.prioritize == 0 ? '-' : nhanVien.prioritize}}</div>
     <div class="col-sm-3">{{nhanVien.name}}</div>
     <div class="col-sm-2" (click) = "checkInNhanVien(nhanVien.id)">{{nhanVien.checkIn}}</div>
@@ -26,19 +26,21 @@
     </div>
     <div class="col-sm-3">{{nhanVien.timecheckIn !== 0 ? (nhanVien.timecheckIn | date: 'medium') : 0}}</div>
   </div>
-  <h5 *ngIf="isNhanVienChon">Gợi ý của chúng tôi là: {{nhanVienChon.name}}</h5>
+  <h5 *ngIf="isStaffChose">Gợi ý của chúng tôi là: {{staffChose.name}}</h5>
   <div class="row" style="margin-top: 100px">
     <div class="col-sm-10"><h3 >Danh sách khách hàng</h3></div>
     <div class="col-sm-2">
-      <button (click)="themKhachHang()">Add</button>
-      <button (click)="goiy()">Xem gợi ý</button>
+      <!-- <button (click)="themKhachHang()">Add</button>
+      <button (click)="goiy()">Xem gợi ý</button> -->
     </div>
   </div>
   <div class="row">
     <div class="col-sm">Name</div>
+    <div class="col-sm">Staff</div>
   </div>
-  <div *ngFor="let khachHang of khachHangs" class="row">
+  <div *ngFor="let khachHang of customers" class="row">
     <div class="col-sm">{{khachHang.name}}</div>
+    <div class="col-sm">{{khachHang.staff}}</div>
   </div>
-  <h5 *ngIf="isAddKh">Chua co nhan vien check in</h5>
+  <h5 *ngIf="isAddCus">Chua co nhan vien check in</h5>
 </div>
